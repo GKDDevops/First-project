@@ -18,8 +18,7 @@ spec:
       - name: frontend
         image: us-central1-docker.pkg.dev/euphoric-oath-463913-c3/frontend-repo/tododevops-frontend:22
         ports:
-        - containerPort: 80
-
+        - containerPort: 3000
 ---
 # frontend-service.yaml
 apiVersion: v1
