@@ -25,7 +25,10 @@ spec:
             - containerPort: 5000
           env:
             - name: MONGODB_URI
-              value: "mongodb+srv://gkgcpdevops:72JWnbE1qUN8RJJC@cluster0.nykegii.mongodb.net/?retryWrites=true&w=majority"
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: connection-string
 
 ---
 apiVersion: v1
