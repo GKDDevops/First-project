@@ -2,7 +2,7 @@ pipeline {
   agent {
     kubernetes {
       label 'docker-gcloud-agent'
-      yamlFile '.jenkins/pod-template.yaml'
+      yamlFile 'pod-template.yaml'
     }
   }
 
