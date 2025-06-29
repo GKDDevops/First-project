@@ -14,6 +14,7 @@ pipeline {
     ZONE = "us-central1-c"
     PROJECT_ID = "euphoric-oath-463913-c3"
     NAMESPACE = "develop-v1"
+    DEPLOYMENT_DIR = "deployment"
   }
 
   stages {
@@ -30,12 +31,6 @@ pipeline {
     stage('Build Docker Images') {
       steps {
         container('cicd') {
-          sh "docker --version"
-          sh "git --version"
-          sh "kubectl version --client"
-          sh "gcloud --version"
-          sh "node --version"
-          sh "npm --version"
           sh "docker build -t $FRONTEND_IMAGE -f ./frontend/Dockerfile ./frontend"
           sh "docker build -t $BACKEND_IMAGE -f ./backend/Dockerfile ./backend"
         }
@@ -64,8 +59,14 @@ pipeline {
             sh '''
               gcloud auth activate-service-account --key-file=$GC_KEY
               gcloud container clusters get-credentials $CLUSTER_NAME --zone $ZONE --project $PROJECT_ID
-              kubectl set image deployment/frontend frontend=$FRONTEND_IMAGE -n $NAMESPACE
-              kubectl set image deployment/backend backend=$BACKEND_IMAGE -n $NAMESPACE
+
+              # Replace image tags in manifest files
+              sed -i "s|<TAGG>|${BUILD_NUMBER}|g" $DEPLOYMENT_DIR/frontend.yaml
+              sed -i "s|<TAGG>|${BUILD_NUMBER}|g" $DEPLOYMENT_DIR/backend.yaml
+
+              # Apply all manifests in the deployment directory
+              kubectl apply -f $DEPLOYMENT_DIR -n $NAMESPACE
+
               kubectl rollout status deployment/frontend -n $NAMESPACE
               kubectl rollout status deployment/backend -n $NAMESPACE
             '''
