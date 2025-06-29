@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: us-central1-docker.pkg.dev/euphoric-oath-463913-c3/frontend-repo/tododevops-frontend:<BUILD_NUMBER>
+        image: us-central1-docker.pkg.dev/euphoric-oath-463913-c3/frontend-repo/tododevops-frontend:22
         ports:
         - containerPort: 80
 

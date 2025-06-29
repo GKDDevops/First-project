@@ -9,16 +9,18 @@ RUN apk add --no-cache \
     npm \
     bash
 
-# Install kubectl using gcloud (requires bash)
-RUN gcloud components install kubectl
+# Install kubectl and gke-gcloud-auth-plugin
+RUN gcloud components install kubectl gke-gcloud-auth-plugin --quiet
 
-# Optional: verify installations
+# Verify installations
 RUN docker --version && \
     git --version && \
     python3 --version && \
     node --version && \
     npm --version && \
     kubectl version --client && \
-    gcloud --version
+    gcloud --version && \
+    gke-gcloud-auth-plugin --version
 
+# Set default command
 CMD ["sh", "-c", "cat"]

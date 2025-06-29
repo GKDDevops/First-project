@@ -2,10 +2,12 @@ apiVersion: v1
 kind: Pod
 spec:
   containers:
-    - name: docker
-      image: google/cloud-sdk:alpine
-      command: ['cat']
+    - name: cicd
+      image: us-central1-docker.pkg.dev/euphoric-oath-463913-c3/tododevops/jenkins-agent:latest
+      command: ['sh', '-c', 'cat']
       tty: true
+      securityContext:
+        privileged: true
       volumeMounts:
         - name: docker-sock
           mountPath: /var/run/docker.sock
@@ -13,3 +15,4 @@ spec:
     - name: docker-sock
       hostPath:
         path: /var/run/docker.sock
+

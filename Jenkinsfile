@@ -1,7 +1,7 @@
 pipeline {
   agent {
     kubernetes {
-      label 'docker-gcloud-agent'
+      label 'cicd-agent'
       yamlFile 'pod-template.yaml'
     }
   }
@@ -29,8 +29,13 @@ pipeline {
 
     stage('Build Docker Images') {
       steps {
-        container('docker') {
+        container('cicd') {
           sh "docker --version"
+          sh "git --version"
+          sh "kubectl version --client"
+          sh "gcloud --version"
+          sh "node --version"
+          sh "npm --version"
           sh "docker build -t $FRONTEND_IMAGE -f ./frontend/Dockerfile ./frontend"
           sh "docker build -t $BACKEND_IMAGE -f ./backend/Dockerfile ./backend"
         }
@@ -39,7 +44,7 @@ pipeline {
 
     stage('Push Docker Images') {
       steps {
-        container('docker') {
+        container('cicd') {
           withCredentials([file(credentialsId: 'gcp-jenkins-sa', variable: 'GC_KEY')]) {
             sh '''
               gcloud auth activate-service-account --key-file=$GC_KEY
@@ -54,16 +59,16 @@ pipeline {
 
     stage('Deploy to GKE') {
       steps {
-        container('docker') {
+        container('cicd') {
           withCredentials([file(credentialsId: 'gcp-jenkins-sa', variable: 'GC_KEY')]) {
-            sh """
+            sh '''
               gcloud auth activate-service-account --key-file=$GC_KEY
-              gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${ZONE} --project ${PROJECT_ID}
-              kubectl set image deployment/frontend frontend=${FRONTEND_IMAGE} -n ${NAMESPACE}
-              kubectl set image deployment/backend backend=${BACKEND_IMAGE} -n ${NAMESPACE}
-              kubectl rollout status deployment/frontend -n ${NAMESPACE}
-              kubectl rollout status deployment/backend -n ${NAMESPACE}
-            """
+              gcloud container clusters get-credentials $CLUSTER_NAME --zone $ZONE --project $PROJECT_ID
+              kubectl set image deployment/frontend frontend=$FRONTEND_IMAGE -n $NAMESPACE
+              kubectl set image deployment/backend backend=$BACKEND_IMAGE -n $NAMESPACE
+              kubectl rollout status deployment/frontend -n $NAMESPACE
+              kubectl rollout status deployment/backend -n $NAMESPACE
+            '''
           }
         }
       }

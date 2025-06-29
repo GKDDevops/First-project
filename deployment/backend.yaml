@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: us-central1-docker.pkg.dev/euphoric-oath-463913-c3/backend-repo/tododevops-backend:<BUILD_NUMBER>
+        image: us-central1-docker.pkg.dev/euphoric-oath-463913-c3/backend-repo/tododevops-backend:22 
         ports:
         - containerPort: 3001
 
