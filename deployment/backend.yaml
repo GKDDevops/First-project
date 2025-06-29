@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: us-central1-docker.pkg.dev/euphoric-oath-463913-c3/backend-repo/tododevops-backend:<TAGG>
+          image: us-central1-docker.pkg.dev/euphoric-oath-463913-c3/tododevops/tododevops-backend:<TAGG>
           ports:
             - containerPort: 5000
           env:
