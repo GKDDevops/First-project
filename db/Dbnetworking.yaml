@@ -1,0 +1,45 @@
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: mongodb-atlas
+  namespace: develop-v1
+spec:
+  hosts:
+    - "cluster0.nykegii.mongodb.net"
+  ports:
+    - number: 27017
+      name: tcp-mongo
+      protocol: TCP
+  resolution: DNS
+  location: MESH_EXTERNAL
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: disable-mtls-mongodb
+  namespace: develop-v1
+spec:
+  host: "cluster0.nykegii.mongodb.net"
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: mongodb-atlas-egress
+  namespace: istio-system
+spec:
+  hosts:
+    - "cluster0.nykegii.mongodb.net"
+  gateways:
+    - istio-egressgateway
+    - mesh
+  tcp:
+    - match:
+        - port: 27017
+      route:
+        - destination:
+            host: "cluster0.nykegii.mongodb.net"
+            port:
+              number: 27017
