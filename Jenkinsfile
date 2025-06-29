@@ -2,7 +2,7 @@ pipeline {
   agent {
     kubernetes {
       label 'docker-gcloud-agent'
-      yamlFile 'pod-template.yaml'
+      yamlFile '.jenkins/pod-template.yaml'
     }
   }
 
@@ -37,22 +37,44 @@ pipeline {
       steps {
         container('docker') {
           withCredentials([file(credentialsId: 'gcp-jenkins-sa', variable: 'GC_KEY')]) {
-            sh '''
-              gcloud auth activate-service-account --key-file=$GC_KEY
-              gcloud auth configure-docker
-              docker push $FRONTEND_IMAGE
-              docker push $BACKEND_IMAGE
-            '''
+            script {
+              // Authenticate with GCP and configure Docker for Artifact Registry
+              sh '''
+                gcloud auth activate-service-account --key-file=$GC_KEY
+                gcloud auth configure-docker us-central1-docker.pkg.dev
+              '''
+              // Try to push images, fail with clear message if unauthenticated
+              def pushStatus = sh(
+                script: """
+                  docker push $FRONTEND_IMAGE || exit 1
+                  docker push $BACKEND_IMAGE || exit 1
+                """,
+                returnStatus: true
+              )
+              if (pushStatus != 0) {
+                error '''
+                Docker push failed. 
+                Please ensure:
+                - The service account has the Artifact Registry Writer role[2][5].
+                - The repository exists and the name is correct.
+                - Authentication is properly configured.
+                '''
+              }
+            }
           }
         }
       }
     }
 
     stage('Deploy to GKE') {
+      when {
+        expression { currentBuild.currentResult == 'SUCCESS' }
+      }
       steps {
         container('docker') {
           withCredentials([file(credentialsId: 'gcp-jenkins-sa', variable: 'GC_KEY')]) {
             sh '''
+              gcloud auth activate-service-account --key-file=$GC_KEY
               gcloud container clusters get-credentials <CLUSTER_NAME> --zone <ZONE> --project <PROJECT_ID>
               kubectl set image deployment/frontend frontend=$FRONTEND_IMAGE
               kubectl set image deployment/backend backend=$BACKEND_IMAGE
@@ -67,7 +89,8 @@ pipeline {
 
   post {
     always {
-      cleanWs()
+      // Use deleteDir() instead of cleanWs() for workspace cleanup[3]
+      deleteDir()
     }
   }
 }
