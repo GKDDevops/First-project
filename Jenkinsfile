@@ -73,7 +73,7 @@ pipeline {
       steps {
         container('docker') {
           withCredentials([file(credentialsId: 'gcp-jenkins-sa', variable: 'GC_KEY')]) {
-            sh '''
+        //    sh '''
               gcloud auth activate-service-account --key-file=$GC_KEY
               gcloud container clusters get-credentials <CLUSTER_NAME> --zone <ZONE> --project <PROJECT_ID>
               kubectl set image deployment/frontend frontend=$FRONTEND_IMAGE
