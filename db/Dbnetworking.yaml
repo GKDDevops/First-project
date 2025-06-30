@@ -34,7 +34,7 @@ spec:
     - "cluster0.nykegii.mongodb.net"
   gateways:
     - mesh
-    - istio-egressgateway
+    - istio-system/istio-egressgateway  # ✅ Full namespace for external gateway
   tcp:
     - match:
         - port: 27017

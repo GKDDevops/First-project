@@ -1,11 +1,11 @@
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
-  name: frontend-gateway
+  name: istio-ingressgateway
   namespace: develop-v1
 spec:
   selector:
-    istio: ingressgateway # This selects the Istio ingress gateway pod
+    istio: ingressgateway
   servers:
     - port:
         number: 80
@@ -13,7 +13,6 @@ spec:
         protocol: HTTP
       hosts:
         - "*"
-  
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -24,7 +23,7 @@ spec:
   hosts:
     - "*"
   gateways:
-    - frontend-gateway
+    - istio-ingressgateway  # ✅ Not the egress gateway
   http:
     - match:
         - uri:

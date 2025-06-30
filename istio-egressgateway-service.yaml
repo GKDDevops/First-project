@@ -14,4 +14,20 @@ spec:
     - name: https
       port: 443
       targetPort: 8443
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: istio-egressgateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: egressgateway
+  servers:
+    - port:
+        number: 27017
+        name: tcp-mongo
+        protocol: TCP
+      hosts:
+        - "cluster0.nykegii.mongodb.net"
 
