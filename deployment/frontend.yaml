@@ -28,9 +28,8 @@ spec:
   selector:
     app: frontend
   ports:
-    - name: http
+    - name: http-frontend
       protocol: TCP
       port: 80
       targetPort: 3000
   type: ClusterIP
-S

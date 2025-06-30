@@ -23,7 +23,7 @@ function App() {
 
   useEffect(() => {
     setLoading(true);
-    axios.get('http://localhost:5000/api/tasks')
+    axios.get('http://backend-service/api/tasks')
       .then(res => setTasks(res.data))
       .catch(() => setError('Failed to fetch tasks'))
       .finally(() => setLoading(false));
@@ -34,7 +34,7 @@ function App() {
     setAdding(true);
     setError('');
     try {
-      const res = await axios.post('http://localhost:5000/api/tasks', {
+      const res = await axios.post('http://backend-service/api/tasks', {
         text,
         priority,
         remark
@@ -53,7 +53,7 @@ function App() {
     setDeletingId(id);
     setError('');
     try {
-      await axios.delete(`http://localhost:5000/api/tasks/${id}`);
+      await axios.delete(`http://backend-service/api/tasks/${id}`);
       setTasks(tasks.filter(task => task._id !== id));
     } catch (err) {
       setError('Failed to delete task');
@@ -79,7 +79,7 @@ function App() {
     if (!editText.trim()) return;
     setError('');
     try {
-      const res = await axios.put(`http://localhost:5000/api/tasks/${id}`, {
+      const res = await axios.put(`http://backend-service/api/tasks/${id}`, {
         text: editText,
         priority: editPriority,
         remark: editRemark
