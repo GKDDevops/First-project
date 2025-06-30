@@ -4,8 +4,9 @@ metadata:
   name: istio-egressgateway
   namespace: istio-system
 spec:
-  type: LoadBalancer
-  loadBalancerIP: 34.46.136.82
+  type: ClusterIP
+  selector:
+    istio: egressgateway
   ports:
     - name: http2
       port: 80
@@ -13,5 +14,4 @@ spec:
     - name: https
       port: 443
       targetPort: 8443
-  selector:
-    istio: egressgateway
+

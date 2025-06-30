@@ -6,12 +6,12 @@ metadata:
 spec:
   hosts:
     - "cluster0.nykegii.mongodb.net"
+  location: MESH_EXTERNAL
+  resolution: DNS
   ports:
     - number: 27017
       name: tcp-mongo
       protocol: TCP
-  resolution: DNS
-  location: MESH_EXTERNAL
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
@@ -28,13 +28,13 @@ apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
   name: mongodb-atlas-egress
-  namespace: istio-system
+  namespace: develop-v1
 spec:
   hosts:
     - "cluster0.nykegii.mongodb.net"
   gateways:
-    - istio-egressgateway
     - mesh
+    - istio-egressgateway
   tcp:
     - match:
         - port: 27017

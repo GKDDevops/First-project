@@ -18,18 +18,10 @@ spec:
             ISTIO_META_DNS_CAPTURE: "true"
             ISTIO_META_DNS_AUTO_ALLOCATE: "true"
     spec:
-      dnsPolicy: "None"    # Use None to allow custom nameservers
-      dnsConfig:
-        nameservers:
-          - 8.8.8.8        # Google Public DNS
-          - 8.8.4.4        # Google Public DNS (secondary)
-        searches:
-          - develop-v1.svc.cluster.local
-          - svc.cluster.local
-          - cluster.local
+      dnsPolicy: ClusterFirst  # ✅ Use default Kubernetes DNS for internal service discovery
       containers:
         - name: backend
-          image: us-central1-docker.pkg.dev/euphoric-oath-463913-c3/tododevops/tododevops-backend:22
+          image: us-central1-docker.pkg.dev/euphoric-oath-463913-c3/tododevops/tododevops-backend:<TAGG>
           ports:
             - containerPort: 5000
           env:
@@ -38,8 +30,6 @@ spec:
                 secretKeyRef:
                   name: mongodb-secret
                   key: connection-string
-
-
 ---
 apiVersion: v1
 kind: Service
