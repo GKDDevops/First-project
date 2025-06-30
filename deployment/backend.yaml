@@ -18,7 +18,7 @@ spec:
             ISTIO_META_DNS_CAPTURE: "true"
             ISTIO_META_DNS_AUTO_ALLOCATE: "true"
     spec:
-      dnsPolicy: ClusterFirst  # ✅ Use default Kubernetes DNS for internal service discovery
+      dnsPolicy: ClusterFirst
       containers:
         - name: backend
           image: us-central1-docker.pkg.dev/euphoric-oath-463913-c3/tododevops/tododevops-backend:<TAGG>
@@ -40,7 +40,8 @@ spec:
   selector:
     app: backend
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
       targetPort: 5000
   type: ClusterIP

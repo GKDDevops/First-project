@@ -14,6 +14,9 @@ spec:
     - name: https
       port: 443
       targetPort: 8443
+    - name: tcp-mongo
+      port: 27017
+      targetPort: 27017
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
@@ -30,4 +33,5 @@ spec:
         protocol: TCP
       hosts:
         - "cluster0.nykegii.mongodb.net"
+
 
