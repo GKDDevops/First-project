@@ -1,17 +1,53 @@
+# Shard 00
 apiVersion: networking.istio.io/v1beta1
 kind: ServiceEntry
 metadata:
-  name: mongodb-atlas
+  name: mongodb-atlas-shard-00
   namespace: develop-v1
 spec:
   hosts:
-    - "cluster0.nykegii.mongodb.net"
+    - ac-bqrpava-shard-00-00.nykegii.mongodb.net
   location: MESH_EXTERNAL
   resolution: DNS
   ports:
     - number: 27017
       name: tcp-mongo
       protocol: TCP
+
+---
+# Shard 01
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: mongodb-atlas-shard-01
+  namespace: develop-v1
+spec:
+  hosts:
+    - ac-bqrpava-shard-00-01.nykegii.mongodb.net
+  location: MESH_EXTERNAL
+  resolution: DNS
+  ports:
+    - number: 27017
+      name: tcp-mongo
+      protocol: TCP
+
+---
+# Shard 02
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: mongodb-atlas-shard-02
+  namespace: develop-v1
+spec:
+  hosts:
+    - ac-bqrpava-shard-00-02.nykegii.mongodb.net
+  location: MESH_EXTERNAL
+  resolution: DNS
+  ports:
+    - number: 27017
+      name: tcp-mongo
+      protocol: TCP
+
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: DestinationRule
@@ -19,10 +55,11 @@ metadata:
   name: disable-mtls-mongodb
   namespace: develop-v1
 spec:
-  host: "cluster0.nykegii.mongodb.net"
+  host: ac-bqrpava-shard-00-00.nykegii.mongodb.net
   trafficPolicy:
     tls:
       mode: DISABLE
+
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -31,7 +68,7 @@ metadata:
   namespace: develop-v1
 spec:
   hosts:
-    - "cluster0.nykegii.mongodb.net"
+    - ac-bqrpava-shard-00-00.nykegii.mongodb.net
   gateways:
     - mesh
     - istio-system/istio-egressgateway
@@ -40,7 +77,6 @@ spec:
         - port: 27017
       route:
         - destination:
-            host: "cluster0.nykegii.mongodb.net"
+            host: ac-bqrpava-shard-00-00.nykegii.mongodb.net
             port:
               number: 27017
-
