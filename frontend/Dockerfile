@@ -1,10 +1,13 @@
-FROM node:20-alpine  
-WORKDIR /app  
-COPY package*.json ./  
-# Install dependencies including web-vitals  
-RUN npm install  
-# Explicitly install web-vitals if not in package.json  
-RUN npm install web-vitals --save-dev  
-COPY . .  
-EXPOSE 3000  
-CMD ["npm", "start"]  
+# Stage 1: Build React app
+FROM node:20-alpine as builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Stage 2: Serve using Nginx
+FROM nginx:stable-alpine
+COPY --from=builder /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

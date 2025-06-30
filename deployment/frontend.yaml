@@ -17,7 +17,7 @@ spec:
         - name: frontend
           image: us-central1-docker.pkg.dev/euphoric-oath-463913-c3/tododevops/tododevops-frontend:<TAGG>
           ports:
-            - containerPort: 3000
+            - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -31,5 +31,5 @@ spec:
     - name: http-frontend
       protocol: TCP
       port: 80
-      targetPort: 3000
+      targetPort: 80
   type: ClusterIP
